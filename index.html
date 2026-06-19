@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>원필이 보러갈래 🐰🩷</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000000;
+    color: #ffffff;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    padding: 20px;
+    font-weight: 700;
+  }
+  .card {
+    width: 100%;
+    max-width: 440px;
+    padding: 36px 28px 24px;
+    text-align: center;
+    background: #0a0a0a;
+    border-radius: 28px;
+    box-shadow:
+      0 20px 50px rgba(255, 255, 255, 0.06),
+      0 2px 6px rgba(255, 255, 255, 0.04);
+    border: 1px solid #2a2a2a;
+    position: relative;
+  }
+  .title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+  .subtitle {
+    font-size: 0.72rem;
+    color: #aaaaaa;
+    margin-bottom: 22px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .clock {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 2px;
+    font-variant-numeric: tabular-nums;
+    color: #ffffff;
+  }
+  .ms {
+    font-size: 0.85rem;
+    color: #888888;
+    margin-bottom: 22px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .sound-hint {
+    font-size: 0.78rem;
+    color: #ffffff;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 20px;
+    padding: 8px 14px;
+    margin-bottom: 14px;
+    font-weight: 700;
+    display: inline-block;
+    animation: pulseHint 1.6s ease-in-out infinite;
+  }
+  .sound-hint.hidden { display: none; }
+  @keyframes pulseHint {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .status {
+    font-size: 0.9rem;
+    margin-bottom: 18px;
+    color: #cccccc;
+    min-height: 1.3em;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  button#bookBtn {
+    width: 100%;
+    padding: 22px 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    border: none;
+    border-radius: 18px;
+    cursor: not-allowed;
+    background: #2a2a2a;
+    color: #777777;
+    transition: background 0.05s, color 0.05s, transform 0.05s, box-shadow 0.05s;
+    letter-spacing: 0.5px;
+  }
+  button#bookBtn.active {
+    background: #ffffff;
+    color: #000000;
+    cursor: pointer;
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.15), 0 8px 20px rgba(255,255,255,0.2);
+  }
+  button#bookBtn.active:active {
+    transform: scale(0.97);
+  }
+  .result {
+    margin-top: 20px;
+    font-size: 1rem;
+    min-height: 4em;
+    line-height: 1.6;
+    font-weight: 800;
+  }
+  .result .big {
+    font-size: 1.6rem;
+    font-weight: 800;
+  }
+  .good { color: #ffffff; }
+  .bad { color: #ffffff; }
+  .neutral { color: #ffffff; }
+
+  .toggles {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 20px;
+  }
+  .toggle-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #1a1a1a;
+    padding: 7px 14px;
+    border-radius: 24px;
+    border: 1px solid #2a2a2a;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.2s;
+  }
+  .toggle-pill.off { opacity: 0.35; }
+  .toggle-pill input { display: none; }
+  .toggle-pill .icon { font-size: 1.05rem; }
+
+  .video-wrap {
+    margin-top: 20px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #2a2a2a;
+    box-shadow: 0 8px 20px rgba(255,255,255,0.05);
+    display: none;
+  }
+  .video-wrap.show { display: block; }
+  video {
+    width: 100%;
+    display: block;
+    background: #000;
+  }
+
+  .history {
+    margin-top: 20px;
+    font-size: 0.78rem;
+    color: #aaaaaa;
+    text-align: left;
+    max-height: 130px;
+    overflow-y: auto;
+    font-weight: 700;
+  }
+  .history div { padding: 3px 0; border-bottom: 1px solid #1f1f1f; }
+
+  .credit {
+    margin-top: 20px;
+    font-size: 0.7rem;
+    color: #888888;
+    letter-spacing: 0.3px;
+    font-weight: 700;
+  }
+  .credit b { color: #ffffff; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="title">원필이 보러갈래 🐰🩷</div>
+  <div class="subtitle">Ready, Set, Click</div>
+  <div class="clock" id="clock">00:00:00</div>
+  <div class="ms" id="ms">.000</div>
+  <div class="sound-hint" id="soundHint">🔈 화면을 한 번 탭하면 소리가 켜져요</div>
+  <div class="status" id="status">오후 8시가 되면 버튼이 활성화됩니다</div>
+
+  <button id="bookBtn" disabled>예매하기</button>
+
+  <div class="result" id="result"></div>
+
+  <div class="toggles">
+    <label class="toggle-pill" id="soundPill">
+      <input type="checkbox" id="soundToggle" checked />
+      <span class="icon">🔔</span>
+    </label>
+    <label class="toggle-pill" id="videoPill">
+      <input type="checkbox" id="videoToggle" checked />
+      <span class="icon">🎬</span>
+    </label>
+    <label class="toggle-pill" id="audioPill">
+      <input type="checkbox" id="audioToggle" />
+      <span class="icon">🔊</span>
+    </label>
+  </div>
+
+  <div class="video-wrap show" id="videoWrap">
+    <video id="refVideo" src="reference.mp4" muted playsinline autoplay loop preload="auto" webkit-playsinline="true"></video>
+  </div>
+
+  <div class="history" id="history"></div>
+
+  <div class="credit">만든이 : <b>touching_pilkki</b></div>
+</div>
+
+<script>
+const clockEl = document.getElementById('clock');
+const msEl = document.getElementById('ms');
+const statusEl = document.getElementById('status');
+const btn = document.getElementById('bookBtn');
+const resultEl = document.getElementById('result');
+const historyEl = document.getElementById('history');
+const soundToggle = document.getElementById('soundToggle');
+const videoToggle = document.getElementById('videoToggle');
+const audioToggle = document.getElementById('audioToggle');
+const soundPill = document.getElementById('soundPill');
+const videoPill = document.getElementById('videoPill');
+const audioPill = document.getElementById('audioPill');
+const videoWrap = document.getElementById('videoWrap');
+const refVideo = document.getElementById('refVideo');
+
+// ---- 티켓팅 타겟 시간: 오후 8시 (20:00:00), 카운트다운은 19:59:56부터 ----
+const TARGET_HOUR = 20;
+const TARGET_MIN = 0;
+const COUNTDOWN_START_HOUR = 19;
+const COUNTDOWN_START_MIN = 59;
+const COUNTDOWN_START_SEC = 56; // 19:59:56부터 비프 시작
+
+let activated = false;
+let activatedAt = null;
+let history = [];
+let lastBeepSecond = -1;
+
+function syncPill(pill, checked) { pill.classList.toggle('off', !checked); }
+syncPill(soundPill, soundToggle.checked);
+syncPill(videoPill, videoToggle.checked);
+syncPill(audioPill, audioToggle.checked);
+
+// 일부 모바일 브라우저는 autoplay 속성만으로는 재생이 안 될 수 있어 JS로 한 번 더 강제 실행
+function tryPlayVideo() {
+  if (!videoToggle.checked) return;
+  const p = refVideo.play();
+  if (p && typeof p.catch === 'function') {
+    p.catch(() => {
+      // 자동재생이 막히면 첫 사용자 터치/클릭 시 재생 시도
+      const resume = () => { refVideo.play().catch(()=>{}); document.removeEventListener('touchstart', resume); document.removeEventListener('click', resume); };
+      document.addEventListener('touchstart', resume, { once: true });
+      document.addEventListener('click', resume, { once: true });
+    });
+  }
+}
+window.addEventListener('DOMContentLoaded', tryPlayVideo);
+window.addEventListener('load', tryPlayVideo);
+refVideo.addEventListener('canplay', tryPlayVideo);
+
+soundToggle.addEventListener('change', () => syncPill(soundPill, soundToggle.checked));
+audioToggle.addEventListener('change', () => {
+  syncPill(audioPill, audioToggle.checked);
+  refVideo.muted = !audioToggle.checked;
+  if (audioToggle.checked) {
+    refVideo.play().catch(()=>{});
+  }
+});
+videoToggle.addEventListener('change', () => {
+  syncPill(videoPill, videoToggle.checked);
+  videoWrap.classList.toggle('show', videoToggle.checked);
+  if (!videoToggle.checked) {
+    refVideo.pause();
+  } else {
+    refVideo.play().catch(()=>{});
+  }
+});
+
+function pad(n, len=2) { return n.toString().padStart(len, '0'); }
+
+// ---- 비프음 (Web Audio API) ----
+let audioCtx = null;
+function ensureAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+function beep(freq, duration, volume) {
+  if (!soundToggle.checked) return;
+  try {
+    ensureAudioCtx();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.value = volume;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+    osc.stop(audioCtx.currentTime + duration);
+  } catch (e) {}
+}
+function tickBeep() { beep(880, 0.08, 0.18); }
+function goBeep() { beep(1320, 0.18, 0.25); }
+
+const soundHint = document.getElementById('soundHint');
+function unlockAudio() {
+  ensureAudioCtx();
+  soundHint.classList.add('hidden');
+  if (audioToggle.checked) {
+    refVideo.muted = false;
+    refVideo.play().catch(()=>{});
+  }
+  document.removeEventListener('click', unlockAudio);
+  document.removeEventListener('touchstart', unlockAudio);
+  document.removeEventListener('touchend', unlockAudio);
+}
+document.addEventListener('click', unlockAudio);
+document.addEventListener('touchstart', unlockAudio);
+document.addEventListener('touchend', unlockAudio);
+
+// ---- 가상 시계: 페이지를 열면 오후 7시 59분 00초부터 시작 ----
+// 실제 시계가 아니라 시뮬레이션이라 언제 접속해도 바로 연습 가능, 정각 이후엔 자동으로 처음으로 돌아가서 반복 연습됨
+const VIRTUAL_START_HOUR = 19;
+const VIRTUAL_START_MIN = 59;
+const VIRTUAL_START_SEC = 0;
+const LOOP_AFTER_SEC = 3; // 정각(20:00:00) 이후 3초가 지나면 다시 19:59:00으로 리셋
+
+const virtualStartMs = VIRTUAL_START_HOUR * 3600000 + VIRTUAL_START_MIN * 60000 + VIRTUAL_START_SEC * 1000;
+const loopBoundaryMs = TARGET_HOUR * 3600000 + TARGET_MIN * 60000 + LOOP_AFTER_SEC * 1000;
+const pageLoadPerf = performance.now();
+
+function getNow() {
+  const elapsed = performance.now() - pageLoadPerf;
+  let virtualMs = virtualStartMs + elapsed;
+  const rangeMs = loopBoundaryMs - virtualStartMs;
+  if (rangeMs > 0) {
+    const offset = (virtualMs - virtualStartMs) % rangeMs;
+    virtualMs = virtualStartMs + offset;
+  }
+  const totalSeconds = Math.floor(virtualMs / 1000);
+  const h = Math.floor(totalSeconds / 3600) % 24;
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  const ms = virtualMs % 1000;
+  return {
+    getHours: () => h,
+    getMinutes: () => m,
+    getSeconds: () => s,
+    getMilliseconds: () => ms,
+    toLocaleTimeString: (locale) => new Date(2000, 0, 1, h, m, s).toLocaleTimeString(locale)
+  };
+}
+
+function isInCountdownWindow(h, m, s) {
+  // 19:59:56 ~ 19:59:59
+  return h === COUNTDOWN_START_HOUR && m === COUNTDOWN_START_MIN && s >= COUNTDOWN_START_SEC;
+}
+function isActivationMoment(h, m, s) {
+  // 정확히 20:00:00
+  return h === TARGET_HOUR && m === TARGET_MIN && s === 0;
+}
+
+function tick() {
+  const now = getNow();
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const s = now.getSeconds();
+  const milli = now.getMilliseconds();
+
+  clockEl.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+  msEl.textContent = `.${pad(milli, 3)}`;
+
+  if (isInCountdownWindow(h, m, s)) {
+    if (milli < 100 && lastBeepSecond !== s) {
+      tickBeep();
+      lastBeepSecond = s;
+    }
+    statusEl.textContent = '곧 활성화됩니다... 준비하세요 🐰';
+    statusEl.style.color = '#ffffff';
+  } else if (isActivationMoment(h, m, s) && milli < 950) {
+    if (!activated) {
+      activated = true;
+      activatedAt = performance.now();
+      btn.disabled = false;
+      btn.classList.add('active');
+      statusEl.textContent = '활성화됨! 지금 클릭하세요!';
+      statusEl.style.color = '#ffffff';
+      goBeep();
+    }
+  } else {
+    if (activated && btn.classList.contains('active') && !btn.disabled) {
+      recordMiss();
+    }
+    activated = false;
+    activatedAt = null;
+    btn.disabled = true;
+    btn.classList.remove('active');
+    if (!isInCountdownWindow(h, m, s)) {
+      statusEl.textContent = '오후 8시가 되면 버튼이 활성화됩니다';
+      statusEl.style.color = '#cccccc';
+      lastBeepSecond = -1;
+    }
+  }
+
+  requestAnimationFrame(tick);
+}
+
+function recordMiss() {
+  history.unshift({ time: getNow().toLocaleTimeString('ko-KR'), reaction: null, missed: true });
+  renderHistory();
+}
+
+btn.addEventListener('click', () => {
+  if (btn.disabled || !activated) return;
+  const reaction = performance.now() - activatedAt;
+  btn.disabled = true;
+  btn.classList.remove('active');
+
+  let msg = '훌륭해요 🐰🩷';
+  if (reaction > 300) { msg = '조금 늦었어요'; }
+  else if (reaction > 150) { msg = '괜찮아요'; }
+
+  resultEl.innerHTML = `<div><span class="big">${reaction.toFixed(0)} ms</span><br>${msg}</div>`;
+
+  history.unshift({ time: getNow().toLocaleTimeString('ko-KR'), reaction: reaction.toFixed(0), missed: false });
+  renderHistory();
+
+  activated = false;
+});
+
+function renderHistory() {
+  historyEl.innerHTML = history.slice(0, 8).map(h => {
+    if (h.missed) {
+      return `<div>${h.time} — 마이데이 할수있다!</div>`;
+    }
+    return `<div>${h.time} — ${h.reaction} ms</div>`;
+  }).join('');
+}
+
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
